@@ -1,33 +1,24 @@
 package com.tomas.miproyecto.entities;
 
-import com.tomas.miproyecto.models.RoundType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
-@Table(name = "races")
+@Table(name = "final_results")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RaceEntity {
-
+public class FinalResultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private RoundType type;
+    @ManyToOne
+    private RunnerEntity runner;
 
-    private int raceNumber;
-
-    @OneToMany(mappedBy = "race", cascade = CascadeType.ALL)
-    private List<RaceResultEntity> results;
-
-
+    private double time;
 }

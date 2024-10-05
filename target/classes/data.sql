@@ -78,4 +78,24 @@ INSERT INTO runners (id, name) VALUES (77, 'Adrian Justin Jimena Ililau');
 INSERT INTO runners (id, name) VALUES (78, 'Karalo Hepoiteloto Maibuca');
 INSERT INTO runners (id, name) VALUES (79, 'Aveni Miguel');
 
+-- Inserts para la tabla race_results
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (1, 1, 1, 1, 9.58);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (2, 2, 1, 2, 9.76);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (3, 3, 1, 3, 9.85);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (4, 4, 1, 4, 9.92);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (5, 5, 1, 5, 9.95);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (6, 1, 2, 1, 9.78);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (7, 2, 2, 2, 9.80);
+INSERT INTO race_results (id, runner_id, race_id, lane, time) VALUES (8, 3, 2, 3, 9.89);
 
+-- Inserts para la tabla races
+INSERT INTO races (id, type, raceNumber, results) VALUES (1, 'FINAL', 1);
+INSERT INTO races (id, type, raceNumber) VALUES (2, 'HEAT', 2);
+INSERT INTO races (id, type, raceNumber) VALUES (3, 'SEMIFINAL', 3);
+
+-- Inserts para la tabla final_results
+INSERT INTO final_results (id, runner_id, time) VALUES (1, 1, 9.58);
+INSERT INTO final_results (id, runner_id, time) VALUES (2, 2, 9.76);
+INSERT INTO final_results (id, runner_id, time) VALUES (3, 3, 9.85);
+INSERT INTO final_results (id, runner_id, time) VALUES (4, 4, 9.92);
+INSERT INTO final_results (id, runner_id, time) VALUES (5, 5, 9.95);

@@ -1,5 +1,6 @@
 package com.tomas.miproyecto.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,13 +18,15 @@ public class RaceResultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonProperty("runner_id")
     @ManyToOne
     private RunnerEntity runner;
 
+    @JsonProperty("race_id")
     @ManyToOne
     private RaceEntity race;
 
     private int lane;
 
-    private long time;
+    private double time;
 }
