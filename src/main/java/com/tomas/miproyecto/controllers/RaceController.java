@@ -22,7 +22,8 @@ public class RaceController {
     }
 
     @PostMapping("/{raceId}/results")
-    public ResponseEntity<Void> saveRaceResults(@PathVariable Long raceId, @RequestBody List<RaceResultDto> results) {
+    public ResponseEntity<Void> saveRaceResults(@PathVariable Long raceId,
+                                                @RequestBody List<RaceResultDto> results) {
         raceService.saveRaceResults(raceId, results);
         return ResponseEntity.ok().build();
     }

@@ -13,6 +13,31 @@ donde todo el mundo acude a competir, a inspirarse y a estar juntos.
 Los Juegos Olímpicos de París 2024, oficialmente conocidos como los Juegos de la XXXIII Olimpiada, se llevará a cabo
 entre el 26 de julio y el 11 de agosto de 2024 en la ciudad de París, Francia.
 
+## Cómo levantar y probar (rápido)
+
+- **Requisitos previos**
+  - **Java 17** (o superior compatible con Spring Boot 3.3.x)
+  - Opcional: **Maven 3.9+** (el proyecto incluye `mvnw`/`mvnw.cmd`, podés usar el wrapper)
+
+- **Levantar la API**
+  - macOS/Linux:
+    - `./mvnw spring-boot:run`
+  - Windows:
+    - `mvnw.cmd spring-boot:run`
+  - La app arranca en `http://localhost:8080`
+
+- **Probar la API**
+  - Abrí Swagger UI: `http://localhost:8080/swagger-ui.html`
+  - La base es H2 en memoria y se inicializa automáticamente con 79 atletas desde `src/main/resources/data.sql`.
+  - Endpoints clave:
+    - `POST /races/assignRunners` → distribuye los 79 atletas en heats y carriles.
+    - `GET /races` → consulta todas las carreras generadas (heats, etc.).
+    - `POST /races/{raceId}/results` → carga los tiempos de una carrera.
+    - `GET /runners/getAllRunners` → lista de atletas cargados.
+
+> Tip de prueba rápida:
+> 1) Ejecutá `POST /races/assignRunners`, 2) mirá `GET /races` para obtener un `raceId`, 3) enviá tiempos con `POST /races/{raceId}/results`.
+
 Esta es la lista de deportes que se llevarán a cabo en los Juegos Olímpicos de París 2024:
 <table>
 <tr><th>ATLETISMO</th><th>BÁDMINTON</th><th>BALONCESTO</th><th>BALONCESTO 3X3</th></tr>
@@ -179,107 +204,58 @@ mejores de ese heat aún clasificarán automáticamente por posición. Los tiemp
 clasificaron por posición también avanzarán, asegurando que los atletas más rápidos en general tengan la oportunidad de
 competir en las siguientes rondas.
 
-# Examen a resolver
+## Sobre el proyecto
 
-Para el examen tomaremos los 79 atletas que compitieron en los 100 metros planos en los Juegos Olímpicos de Tokio 2020.
+Este repositorio contiene una API de ejemplo para gestionar la prueba de 100 metros planos de JJOO París 2024. El servicio:
 
-Con 79 participantes en los 100 metros planos en los Juegos Olímpicos, se debe organizar de manera que los heats sean
-lo más equilibrados posible en cuanto al número de corredores. A continuación se detalla cómo se deben armar los heats
-y clasificar los atletas para las siguientes rondas:
+- Carga automáticamente 79 atletas (Tokio 2020) en una base H2 en memoria.
+- Asigna aleatoriamente atletas a heats y carriles.
+- Permite cargar resultados por carrera (tiempos por carril).
+- Realiza una clasificación básica y persiste resultados finales.
+- Expone la documentación interactiva mediante Swagger UI.
 
-## Determinación del Número de Heats
+## Endpoints principales
 
-- Para 79 atletas, una forma razonable sería organizar heats de aproximadamente 8 o 9 corredores cada uno.
-- Por ejemplo, si dividimos 79 entre 9 heats, tenemos aproximadamente 8.78 atletas por heat, por lo que podemos
-  organizar 9 heats: **7 heats con 9 corredores y 2 heats con 8 corredores.**
+- `POST /races/assignRunners`
+  - Distribuye los 79 atletas en heats y carriles (RoundType.HEAT).
+  - Respuesta: `200 OK`
 
-## Rondas y Clasificación
-### Primera Ronda (Heats)
-- **9 heats con 8 o 9 corredores cada uno.**
-    - **Clasificación**: Se puede clasificar a los 2 primeros de cada heat (18 atletas) y tomar los siguientes 6 mejores
-      tiempos (6 atletas) para un total de 24 atletas en las semifinales.
+- `GET /races`
+  - Devuelve todas las carreras creadas con sus corredores asignados.
+  - Respuesta: `200 OK` con `List<RaceDto>`
 
-### Semifinales
-- **3 heats con 8 atletas cada uno (24 atletas en total).**
-    - **Clasificación:** Los 2 primeros de cada heat (6 atletas) y los siguientes 2 mejores tiempos (2 atletas).
+- `POST /races/{raceId}/results`
+  - Registra los tiempos de una carrera.
+  - Body (ejemplo):
 
-### Final
-- **8 atletas compiten en la final.**
+```json
+[
+  { "runner": { "id": 1 }, "lane": 1, "time": 10.12 },
+  { "runner": { "id": 2 }, "lane": 2, "time": 10.20 }
+]
+```
 
-### Ejemplo Detallado
+- `GET /runners/getAllRunners`
+  - Lista los atletas cargados.
 
-### Heats
+- `GET /runners/getRunnersById/{id}`
+  - Devuelve un atleta por `id`.
 
-1. Heat 1: 9 corredores
-2. Heat 2: 9 corredores
-3. Heat 3: 9 corredores
-4. Heat 4: 9 corredores
-5. Heat 5: 9 corredores
-6. Heat 6: 9 corredores
-7. Heat 7: 9 corredores
-8. Heat 8: 8 corredores
-9. Heat 9: 8 corredores
+## Documentación de API
 
-- **Clasificación Directa:** Los 2 primeros de cada heat = 18 corredores.
-- **Clasificación por Tiempo:** Los siguientes 6 mejores tiempos = 6 corredores.
-- **Total en Semifinales:** 24 corredores.
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Configuración en `src/main/java/com/tomas/miproyecto/config/SpringDocConfig.java`
 
-> Notar que no se hacen cuartos de final en este caso, ya que el número de atletas clasificados directamente y por tiempo
-> es suficiente para llenar las semifinales.
+## Base de datos
 
-### Semifinales
+- H2 en memoria: `jdbc:h2:mem:test`
+- Inicialización automática: `src/main/resources/data.sql` (79 atletas)
+- Al reiniciar la app, los datos se recrean.
 
-1. Semifinal 1: 8 corredores
-2. Semifinal 2: 8 corredores
-3. Semifinal 3: 8 corredores
+## Requisitos técnicos
 
-- **Clasificación Directa:** Los 2 primeros de cada semifinal = 6 corredores.
-- **Clasificación por Tiempo:** Los siguientes 2 mejores tiempos = 2 corredores.
-- **Total en Final:** 8 corredores.
-
-### Final
-
-- **8 corredores compiten por las medallas.**
-
-### Resumen
-
-- Primera Ronda: 9 heats, 2 primeros de cada heat más 6 mejores tiempos clasifican a semifinales.
-- Semifinales: 3 heats, 2 primeros de cada heat más 2 mejores tiempos clasifican a la final.
-- Final: 8 corredores compiten.
-
-## Requerimientos
-
-1. **Carga de Atletas**: El sistema ya cuenta con los 79 atletas que compitieron en los 100 metros planos en los Juegos
-   Olímpicos de Tokio 2020. Deberás implementar un sistema que permita visualizar la lista de atletas y **organizarlos en
-   los heats correspondientes.**
-
-   > Los atletas deben ser **distribuidos aleatoriamente** en los 9 heats de la forma que se describió anteriormente,
-   > asignando por cada carrera un carril para cada corredor.
-
-2. **Clasificación a Semifinales y Final**: El sistema deberá permitir recibir por API los tiempos de cada
-   carrera indicando el identificador de la carrera, el numero de carril y el <u>**tiempo en milisegundos**</u>. Con estos datos,
-   el sistema deberá **clasificar a los atletas a las semifinales y a la final** según el proceso descrito anteriormente.
-
-   > El proceso de clasificación se realizará automáticamente al recibir los tiempos de cada carrera para las
-   > clasificaciones directas y al finalizar todas las carreras de la etapa (Heat o Semifinales) para las
-   > clasificaciones por tiempo.
-
-3. **Medallero**: El sistema deberá mostrar un ranking de los atletas ordenado por el resultado de toda la competencia,
-   teniendo en cuenta los resultados de la final, semifinales y heats en ese orden; es decir que los atletas que
-   no clasifiquen a la final, deberán ser ordenados por el tiempo de las semifinales y los que no clasifiquen a las
-   semifinales, deberán ser ordenados por el tiempo de los heats.
-
-    - Por ejemplo:
-        - **Del primero al octavo lugar:** los atletas que compitieron en la final ordenados por mejor tiempo.
-        - **Del noveno al vigesimocuarto lugar:** los atletas que compitieron en las semifinales pero no en la final ordenados
-          por mejor tiempo.
-        - **Del vigesimoquinto al setentainueveavo lugar:** los atletas que compitieron en los heats pero no en las semifinales
-          ni en la final ordenados por mejor tiempo.
-
-> **IMPORTANTE:** Limitarse a resolver los requerimientos solicitados sin agregar funcionalidades adicionales ni
-> contemplar casos especiales como descalificaciones, empates, etc.
-
-
-## Ejemplo práctico
-
-En el siguiente [archivo](EJEMPLO.md) les dejo un ejemplo práctico de como podría darse la clasificación a las carreras.
+- Java 17
+- Spring Boot 3.3.x
+- JPA + H2
+- ModelMapper
+- Springdoc OpenAPI
